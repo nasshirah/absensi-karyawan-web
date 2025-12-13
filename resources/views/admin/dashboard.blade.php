@@ -2,433 +2,348 @@
 
 @section('content')
 @php($title = 'Dashboard')
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
 <style>
-    .dashboard-header {
-        margin-bottom: 2rem;
-    }
-    
-    .dashboard-title {
-        font-size: 28px;
-        font-weight: 700;
-        color: #2d3748;
-        margin-bottom: 0.5rem;
-    }
-    
-    .dashboard-subtitle {
-        color: #718096;
-        font-size: 15px;
+    /* Global Dashboard Styles */
+    .dashboard-container {
+        max-width: 1600px;
+        margin: 0 auto;
+        position: relative;
     }
 
-    .stat-card {
-        border: none;
-        border-radius: 20px;
-        transition: all 0.3s ease;
-        background: white;
-        overflow: hidden;
-        position: relative;
-        height: 100%;
-    }
-    
-    .stat-card::before {
+    /* Ambient Background Glow */
+    .dashboard-container::before {
         content: '';
         position: absolute;
-        top: 0;
-        right: 0;
-        width: 100px;
-        height: 100px;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 50%;
-        transform: translate(30%, -30%);
+        top: -150px;
+        right: -150px;
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, rgba(0,0,0,0) 70%);
+        z-index: -1;
+        pointer-events: none;
     }
     
-    .stat-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 12px 28px rgba(0,0,0,0.12);
+    .dashboard-container::after {
+        content: '';
+        position: absolute;
+        bottom: -150px;
+        left: -150px;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(circle, rgba(236, 72, 153, 0.1) 0%, rgba(0,0,0,0) 70%);
+        z-index: -1;
+        pointer-events: none;
     }
-    
-    .stat-card-body {
+
+    /* Header */
+    .welcome-header {
+        margin-bottom: 2.5rem;
+        position: relative;
+    }
+
+    .welcome-title {
+        font-size: 2.25rem;
+        font-weight: 800;
+        letter-spacing: -1px;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(135deg, #0f172a 0%, #334155 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .welcome-subtitle {
+        color: #64748b;
+        font-size: 1.1rem;
+        font-weight: 500;
+    }
+
+    /* Stat Cards */
+    .stat-card {
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        border-radius: 24px;
         padding: 1.75rem;
         position: relative;
-        z-index: 1;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        height: 100%;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
-    
-    .icon-box {
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.1);
+        background: rgba(255, 255, 255, 0.95);
+        border-color: rgba(255, 255, 255, 1);
+    }
+
+    .stat-icon-wrapper {
         width: 56px;
         height: 56px;
-        border-radius: 16px;
+        border-radius: 18px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 26px;
-        color: #fff;
-        margin-bottom: 1rem;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        font-size: 1.5rem;
+        margin-bottom: 1.25rem;
+        transition: transform 0.3s ease;
+        box-shadow: 0 8px 16px -4px rgba(0,0,0,0.1);
     }
-    
-    .stat-label {
-        color: #718096;
-        font-size: 13px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin-bottom: 0.5rem;
+
+    .stat-card:hover .stat-icon-wrapper {
+        transform: scale(1.1) rotate(-5deg);
     }
-    
+
     .stat-value {
-        font-size: 2.25rem;
+        font-size: 2.5rem;
         font-weight: 800;
-        color: #2d3748;
+        color: #1e293b;
         line-height: 1;
+        margin-bottom: 0.25rem;
+        letter-spacing: -1px;
     }
-    
-    .stat-card.clickable {
-        cursor: pointer;
+
+    .stat-label {
+        color: #64748b;
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
     }
-    
-    .stat-card.clickable:hover .icon-box {
-        transform: scale(1.1) rotate(5deg);
+
+    /* Gradients for Icons */
+    .grad-indigo { background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: white; box-shadow: 0 10px 20px -5px rgba(79, 70, 229, 0.4); }
+    .grad-pink { background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); color: white; box-shadow: 0 10px 20px -5px rgba(219, 39, 119, 0.4); }
+    .grad-emerald { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; box-shadow: 0 10px 20px -5px rgba(5, 150, 105, 0.4); }
+    .grad-amber { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; box-shadow: 0 10px 20px -5px rgba(217, 119, 6, 0.4); }
+    .grad-cyan { background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); color: white; box-shadow: 0 10px 20px -5px rgba(8, 145, 178, 0.4); }
+    .grad-red { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; box-shadow: 0 10px 20px -5px rgba(220, 38, 38, 0.4); }
+    .grad-slate { background: linear-gradient(135deg, #64748b 0%, #475569 100%); color: white; box-shadow: 0 10px 20px -5px rgba(71, 85, 105, 0.4); }
+
+    /* Chart Cards */
+    .chart-panel {
+        background: white;
+        border-radius: 24px;
+        padding: 2rem;
+        height: 100%;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+        border: 1px solid rgba(226, 232, 240, 0.6);
         transition: all 0.3s ease;
     }
     
-    /* Color schemes */
-    .bg-gradient-primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    .chart-panel:hover {
+        box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.05);
     }
-    
-    .bg-gradient-danger {
-        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    }
-    
-    .bg-gradient-success {
-        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-    }
-    
-    .bg-gradient-warning {
-        background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-    }
-    
-    .bg-gradient-info {
-        background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
-    }
-    
-    .bg-gradient-green {
-        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-    }
-    
-    .bg-gradient-orange {
-        background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
-    }
-    
-    .bg-gradient-secondary {
-        background: linear-gradient(135deg, #868f96 0%, #596164 100%);
-    }
-    
-    /* Chart Cards */
-    .chart-card {
-        background: white;
-        border-radius: 20px;
-        padding: 2rem;
-        box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-        height: 100%;
-    }
-    
+
     .chart-header {
-        margin-bottom: 1.5rem;
+        margin-bottom: 2rem;
     }
-    
+
     .chart-title {
-        font-size: 18px;
-        font-weight: 700;
-        color: #2d3748;
-        margin-bottom: 0.25rem;
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: #1e293b;
+        letter-spacing: -0.5px;
     }
     
     .chart-subtitle {
-        font-size: 13px;
-        color: #718096;
+        color: #94a3b8;
+        font-size: 0.9rem;
+        margin-top: 0.25rem;
     }
-    
-    .chart-container {
-        position: relative;
-        height: 300px;
+
+    /* Animation Stagger */
+    .animate-up {
+        opacity: 0;
+        animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
-    
-    /* Responsive */
-    @media (max-width: 768px) {
-        .stat-value {
-            font-size: 1.75rem;
-        }
-        
-        .icon-box {
-            width: 48px;
-            height: 48px;
-            font-size: 22px;
-        }
-        
-        .chart-container {
-            height: 250px;
-        }
+
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
     }
 </style>
 
-<div class="dashboard-header">
-    <h1 class="dashboard-title">Dashboard Overview</h1>
-    <p class="dashboard-subtitle">Monitor sistem dan aktivitas karyawan secara real-time</p>
-</div>
-
-<div class="row g-4 mb-4">
-    {{-- Total Users --}}
-    <div class="col-sm-6 col-lg-3">
-        <div class="card stat-card shadow-sm">
-            <div class="stat-card-body">
-                <div class="icon-box bg-gradient-primary">
-                    <i class="bi bi-people"></i>
-                </div>
-                <div class="stat-label">Total Users</div>
-                <div class="stat-value">{{ $stats['total_users'] }}</div>
-            </div>
-        </div>
+<div class="dashboard-container">
+    <!-- Header -->
+    <div class="welcome-header animate-up">
+        <h1 class="welcome-title">Dashboard Overview</h1>
+        <p class="welcome-subtitle">Monitor performa presensi dan aktivitas karyawan secara real-time.</p>
     </div>
 
-    {{-- Admins --}}
-    <div class="col-sm-6 col-lg-3">
-        <div class="card stat-card shadow-sm">
-            <div class="stat-card-body">
-                <div class="icon-box bg-gradient-danger">
-                    <i class="bi bi-person-gear"></i>
-                </div>
-                <div class="stat-label">Admins</div>
-                <div class="stat-value">{{ $stats['admins'] }}</div>
-            </div>
-        </div>
-    </div>
-
-    {{-- Karyawans --}}
-    <div class="col-sm-6 col-lg-3">
-        <div class="card stat-card shadow-sm">
-            <div class="stat-card-body">
-                <div class="icon-box bg-gradient-success">
-                    <i class="bi bi-briefcase"></i>
-                </div>
-                <div class="stat-label">Karyawans</div>
-                <div class="stat-value">{{ $stats['karyawans'] }}</div>
-            </div>
-        </div>
-    </div>
-
-    {{-- Roles --}}
-    <div class="col-sm-6 col-lg-3">
-        <div class="card stat-card shadow-sm">
-            <div class="stat-card-body">
-                <div class="icon-box bg-gradient-warning">
-                    <i class="bi bi-shield-lock"></i>
-                </div>
-                <div class="stat-label">Roles</div>
-                <div class="stat-value">{{ $stats['roles'] }}</div>
-            </div>
-        </div>
-    </div>
-
-    {{-- Permissions --}}
-    <div class="col-sm-6 col-lg-3">
-        <div class="card stat-card shadow-sm">
-            <div class="stat-card-body">
-                <div class="icon-box bg-gradient-info">
-                    <i class="bi bi-key"></i>
-                </div>
-                <div class="stat-label">Permissions</div>
-                <div class="stat-value">{{ $stats['permissions'] }}</div>
-            </div>
-        </div>
-    </div>
-
-    {{-- Hadir Hari Ini --}}
-    <div class="col-sm-6 col-lg-3">
-        <a href="{{ route('admin.dashboard.today') }}" class="text-decoration-none">
-            <div class="card stat-card shadow-sm clickable">
-                <div class="stat-card-body">
-                    <div class="icon-box bg-gradient-green">
-                        <i class="bi bi-check-circle"></i>
+    <!-- Stats Grid -->
+    <div class="row g-4 mb-5">
+        <!-- Total Users -->
+        <div class="col-sm-6 col-lg-3 animate-up" style="animation-delay: 0.1s;">
+            <div class="stat-card">
+                <div class="d-flex align-items-start justify-content-between">
+                    <div>
+                        <div class="stat-value">{{ $stats['total_users'] }}</div>
+                        <div class="stat-label">Total Pengguna</div>
                     </div>
-                    <div class="stat-label">Hadir Hari Ini</div>
-                    <div class="stat-value">{{ $stats['present_today'] }}</div>
-                </div>
-            </div>
-        </a>
-    </div>
-
-    {{-- Telat Hari Ini --}}
-    <div class="col-sm-6 col-lg-3">
-        <a href="{{ route('admin.dashboard.telat') }}" class="text-decoration-none">
-            <div class="card stat-card shadow-sm clickable">
-                <div class="stat-card-body">
-                    <div class="icon-box bg-gradient-orange">
-                        <i class="bi bi-exclamation-circle"></i>
+                    <div class="stat-icon-wrapper grad-indigo">
+                        <i class="bi bi-people-fill"></i>
                     </div>
-                    <div class="stat-label">Telat Hari Ini</div>
-                    <div class="stat-value">{{ $stats['late_today'] }}</div>
+                </div>
+                <div class="mt-3">
+                    <span class="badge bg-light text-primary border rounded-pill px-3 py-2">
+                        <i class="bi bi-people me-1"></i> +12% this month
+                    </span>
                 </div>
             </div>
-        </a>
+        </div>
+
+        <!-- Hadir Hari Ini -->
+        <div class="col-sm-6 col-lg-3 animate-up" style="animation-delay: 0.2s;">
+            <a href="{{ route('admin.dashboard.today') }}" class="text-decoration-none">
+                <div class="stat-card">
+                    <div class="d-flex align-items-start justify-content-between">
+                        <div>
+                            <div class="stat-value text-success">{{ $stats['present_today'] }}</div>
+                            <div class="stat-label">Hadir Hari Ini</div>
+                        </div>
+                        <div class="stat-icon-wrapper grad-emerald">
+                            <i class="bi bi-check-lg"></i>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <div class="progress" style="height: 6px; border-radius: 10px; background: #e2e8f0;">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: {{ $stats['total_users'] > 0 ? ($stats['present_today'] / $stats['total_users']) * 100 : 0 }}%"></div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Telat Hari Ini -->
+        <div class="col-sm-6 col-lg-3 animate-up" style="animation-delay: 0.3s;">
+            <a href="{{ route('admin.dashboard.telat') }}" class="text-decoration-none">
+                <div class="stat-card">
+                    <div class="d-flex align-items-start justify-content-between">
+                        <div>
+                            <div class="stat-value text-danger">{{ $stats['late_today'] }}</div>
+                            <div class="stat-label">Terlambat</div>
+                        </div>
+                        <div class="stat-icon-wrapper grad-pink">
+                            <i class="bi bi-alarm-fill"></i>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <span class="text-danger small fw-bold">
+                            <i class="bi bi-arrow-up-right me-1"></i> Perlu Perhatian
+                        </span>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Tidak Hadir -->
+        <div class="col-sm-6 col-lg-3 animate-up" style="animation-delay: 0.4s;">
+            <div class="stat-card">
+                <div class="d-flex align-items-start justify-content-between">
+                    <div>
+                        <div class="stat-value text-muted">{{ $stats['absent_today'] }}</div>
+                        <div class="stat-label">Tidak Hadir</div>
+                    </div>
+                    <div class="stat-icon-wrapper grad-slate">
+                        <i class="bi bi-person-x-fill"></i>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <span class="text-muted small">Tanpa Keterangan: {{ $stats['absent_today'] }}</span>
+                </div>
+            </div>
+        </div>
     </div>
 
-    {{-- Tidak Hadir --}}
-    <div class="col-sm-6 col-lg-3">
-        <div class="card stat-card shadow-sm">
-            <div class="stat-card-body">
-                <div class="icon-box bg-gradient-secondary">
-                    <i class="bi bi-x-circle"></i>
+    <!-- Secondary Stats -->
+    <div class="row g-4 mb-5 animate-up" style="animation-delay: 0.5s;">
+        <div class="col-md-4">
+            <div class="stat-card py-3 px-4 d-flex flex-row align-items-center gap-3">
+                <div class="stat-icon-wrapper grad-amber mb-0" style="width: 48px; height: 48px; font-size: 1.25rem;">
+                    <i class="bi bi-shield-check"></i>
                 </div>
-                <div class="stat-label">Tidak Hadir</div>
-                <div class="stat-value">{{ $stats['absent_today'] }}</div>
+                <div>
+                    <div class="fs-4 fw-bold text-dark">{{ $stats['admins'] }}</div>
+                    <div class="text-muted text-uppercase text-xs fw-bold">Administrators</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card py-3 px-4 d-flex flex-row align-items-center gap-3">
+                <div class="stat-icon-wrapper grad-cyan mb-0" style="width: 48px; height: 48px; font-size: 1.25rem;">
+                    <i class="bi bi-briefcase-fill"></i>
+                </div>
+                <div>
+                    <div class="fs-4 fw-bold text-dark">{{ $stats['karyawans'] }}</div>
+                    <div class="text-muted text-uppercase text-xs fw-bold">Total Karyawan</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card py-3 px-4 d-flex flex-row align-items-center gap-3">
+                <div class="stat-icon-wrapper grad-red mb-0" style="width: 48px; height: 48px; font-size: 1.25rem;">
+                    <i class="bi bi-key-fill"></i>
+                </div>
+                <div>
+                    <div class="fs-4 fw-bold text-dark">{{ $stats['permissions'] }}</div>
+                    <div class="text-muted text-uppercase text-xs fw-bold">Permissions</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="row g-4">
+        <!-- Monthly Trend -->
+        <div class="col-lg-8 animate-up" style="animation-delay: 0.6s;">
+            <div class="chart-panel">
+                <div class="chart-header d-flex justify-content-between align-items-center">
+                    <div>
+                        <h3 class="chart-title">Tren Kehadiran Bulanan</h3>
+                        <p class="chart-subtitle">Analisis grafik kehadiran selama 30 hari terakhir</p>
+                    </div>
+                </div>
+                <div style="height: 350px;">
+                    <canvas id="monthlyTrendChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Pie -->
+        <div class="col-lg-4 animate-up" style="animation-delay: 0.7s;">
+            <div class="chart-panel">
+                <div class="chart-header">
+                    <h3 class="chart-title">Status Hari Ini</h3>
+                    <p class="chart-subtitle">Komposisi kehadiran karyawan</p>
+                </div>
+                <div style="height: 300px; position: relative;">
+                    <canvas id="statusChart"></canvas>
+                    <div class="position-absolute top-50 start-50 translate-middle text-center">
+                        <div class="text-muted small text-uppercase fw-bold">Total</div>
+                        <div class="fs-2 fw-bold text-dark">{{ $stats['total_users'] }}</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-{{-- Charts Section --}}
-<div class="row g-4">
-    {{-- Attendance Overview Chart --}}
-    <div class="col-lg-8">
-        <div class="chart-card">
-            <div class="chart-header">
-                <h3 class="chart-title">Statistik Kehadiran Mingguan</h3>
-                <p class="chart-subtitle">Data kehadiran 7 hari terakhir</p>
-            </div>
-            <div class="chart-container">
-                <canvas id="attendanceChart"></canvas>
-            </div>
-        </div>
-    </div>
-
-    {{-- Attendance Status Pie Chart --}}
-    <div class="col-lg-4">
-        <div class="chart-card">
-            <div class="chart-header">
-                <h3 class="chart-title">Status Kehadiran Hari Ini</h3>
-                <p class="chart-subtitle">Persentase kehadiran karyawan</p>
-            </div>
-            <div class="chart-container">
-                <canvas id="statusChart"></canvas>
-            </div>
-        </div>
-    </div>
-
-    {{-- Monthly Attendance Trend --}}
-    <div class="col-lg-12">
-        <div class="chart-card">
-            <div class="chart-header">
-                <h3 class="chart-title">Tren Kehadiran Bulanan</h3>
-                <p class="chart-subtitle">Perbandingan kehadiran, keterlambatan, dan ketidakhadiran bulan ini</p>
-            </div>
-            <div class="chart-container" style="height: 350px;">
-                <canvas id="monthlyTrendChart"></canvas>
-            </div>
-        </div>
-    </div>
-</div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Chart colors
-    const colors = {
-        primary: '#667eea',
-        success: '#11998e',
-        danger: '#f5576c',
-        warning: '#fee140',
-        secondary: '#868f96',
-        info: '#30cfd0'
-    };
-
-    // Weekly Attendance Chart
-    const attendanceCtx = document.getElementById('attendanceChart').getContext('2d');
-    new Chart(attendanceCtx, {
-        type: 'bar',
-        data: {
-            labels: ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'],
-            datasets: [{
-                label: 'Hadir',
-                data: [85, 92, 88, 90, 87, 45, 12],
-                backgroundColor: 'rgba(17, 153, 142, 0.8)',
-                borderColor: 'rgba(17, 153, 142, 1)',
-                borderWidth: 2,
-                borderRadius: 8
-            }, {
-                label: 'Telat',
-                data: [8, 5, 7, 6, 9, 3, 1],
-                backgroundColor: 'rgba(238, 9, 121, 0.8)',
-                borderColor: 'rgba(238, 9, 121, 1)',
-                borderWidth: 2,
-                borderRadius: 8
-            }, {
-                label: 'Tidak Hadir',
-                data: [7, 3, 5, 4, 4, 2, 1],
-                backgroundColor: 'rgba(134, 143, 150, 0.8)',
-                borderColor: 'rgba(134, 143, 150, 1)',
-                borderWidth: 2,
-                borderRadius: 8
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    display: true,
-                    position: 'top',
-                    labels: {
-                        usePointStyle: true,
-                        padding: 15,
-                        font: {
-                            size: 12,
-                            weight: '600'
-                        }
-                    }
-                },
-                tooltip: {
-                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                    padding: 12,
-                    borderRadius: 8,
-                    titleFont: {
-                        size: 14,
-                        weight: '600'
-                    },
-                    bodyFont: {
-                        size: 13
-                    }
-                }
-            },
-            scales: {
-                x: {
-                    grid: {
-                        display: false
-                    },
-                    ticks: {
-                        font: {
-                            size: 12,
-                            weight: '600'
-                        }
-                    }
-                },
-                y: {
-                    beginAtZero: true,
-                    grid: {
-                        color: 'rgba(0, 0, 0, 0.05)'
-                    },
-                    ticks: {
-                        font: {
-                            size: 12
-                        }
-                    }
-                }
-            }
-        }
-    });
-
-    // Status Pie Chart
+    // Styling constants
+    Chart.defaults.font.family = "'Outfit', 'Helvetica', 'Arial', sans-serif";
+    Chart.defaults.color = '#64748b';
+    
+    // Status Chart
     const statusCtx = document.getElementById('statusChart').getContext('2d');
     new Chart(statusCtx, {
         type: 'doughnut',
@@ -437,174 +352,81 @@ document.addEventListener('DOMContentLoaded', function() {
             datasets: [{
                 data: [{{ $stats['present_today'] }}, {{ $stats['late_today'] }}, {{ $stats['absent_today'] }}],
                 backgroundColor: [
-                    'rgba(17, 153, 142, 0.9)',
-                    'rgba(238, 9, 121, 0.9)',
-                    'rgba(134, 143, 150, 0.9)'
+                    '#10b981', // Emerald
+                    '#ec4899', // Pink
+                    '#94a3b8'  // Slate
                 ],
-                borderColor: [
-                    'rgba(17, 153, 142, 1)',
-                    'rgba(238, 9, 121, 1)',
-                    'rgba(134, 143, 150, 1)'
-                ],
-                borderWidth: 2
+                borderWidth: 0,
+                hoverOffset: 4
             }]
         },
         options: {
+            cutout: '75%',
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
                 legend: {
                     position: 'bottom',
-                    labels: {
-                        usePointStyle: true,
-                        padding: 20,
-                        font: {
-                            size: 12,
-                            weight: '600'
-                        }
-                    }
-                },
-                tooltip: {
-                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                    padding: 12,
-                    borderRadius: 8,
-                    callbacks: {
-                        label: function(context) {
-                            const label = context.label || '';
-                            const value = context.parsed || 0;
-                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                            const percentage = ((value / total) * 100).toFixed(1);
-                            return `${label}: ${value} (${percentage}%)`;
-                        }
-                    }
+                    labels: { usePointStyle: true, padding: 20, font: { weight: 600 } }
                 }
-            },
-            cutout: '65%'
+            }
         }
     });
 
     // Monthly Trend Chart
     const monthlyCtx = document.getElementById('monthlyTrendChart').getContext('2d');
+    
+    // Gradient for Area
+    let gradientPresent = monthlyCtx.createLinearGradient(0, 0, 0, 400);
+    gradientPresent.addColorStop(0, 'rgba(16, 185, 129, 0.2)');
+    gradientPresent.addColorStop(1, 'rgba(16, 185, 129, 0)');
+
+    let gradientLate = monthlyCtx.createLinearGradient(0, 0, 0, 400);
+    gradientLate.addColorStop(0, 'rgba(236, 72, 153, 0.2)');
+    gradientLate.addColorStop(1, 'rgba(236, 72, 153, 0)');
+
     new Chart(monthlyCtx, {
         type: 'line',
         data: {
-            labels: ['1', '5', '10', '15', '20', '25', '30'],
-            datasets: [{
-                label: 'Hadir',
-                data: [88, 90, 87, 92, 89, 91, 88],
-                borderColor: 'rgba(17, 153, 142, 1)',
-                backgroundColor: 'rgba(17, 153, 142, 0.1)',
-                borderWidth: 3,
-                tension: 0.4,
-                fill: true,
-                pointRadius: 5,
-                pointHoverRadius: 7,
-                pointBackgroundColor: 'rgba(17, 153, 142, 1)',
-                pointBorderColor: '#fff',
-                pointBorderWidth: 2
-            }, {
-                label: 'Telat',
-                data: [7, 6, 8, 5, 7, 6, 8],
-                borderColor: 'rgba(238, 9, 121, 1)',
-                backgroundColor: 'rgba(238, 9, 121, 0.1)',
-                borderWidth: 3,
-                tension: 0.4,
-                fill: true,
-                pointRadius: 5,
-                pointHoverRadius: 7,
-                pointBackgroundColor: 'rgba(238, 9, 121, 1)',
-                pointBorderColor: '#fff',
-                pointBorderWidth: 2
-            }, {
-                label: 'Tidak Hadir',
-                data: [5, 4, 5, 3, 4, 3, 4],
-                borderColor: 'rgba(134, 143, 150, 1)',
-                backgroundColor: 'rgba(134, 143, 150, 0.1)',
-                borderWidth: 3,
-                tension: 0.4,
-                fill: true,
-                pointRadius: 5,
-                pointHoverRadius: 7,
-                pointBackgroundColor: 'rgba(134, 143, 150, 1)',
-                pointBorderColor: '#fff',
-                pointBorderWidth: 2
-            }]
+            labels: ['1', '5', '10', '15', '20', '25', '30'], // Sample labels
+            datasets: [
+                {
+                    label: 'Hadir',
+                    data: [85, 88, 87, 85, 89, 90, 88], // Sample data
+                    borderColor: '#10b981',
+                    backgroundColor: gradientPresent,
+                    borderWidth: 3,
+                    tension: 0.4,
+                    fill: true,
+                    pointRadius: 0,
+                    pointHoverRadius: 6
+                },
+                {
+                    label: 'Telat',
+                    data: [5, 3, 6, 8, 4, 3, 5], // Sample data
+                    borderColor: '#ec4899',
+                    backgroundColor: gradientLate,
+                    borderWidth: 3,
+                    tension: 0.4,
+                    fill: true,
+                    pointRadius: 0,
+                    pointHoverRadius: 6
+                }
+            ]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            interaction: {
-                intersect: false,
-                mode: 'index'
-            },
+            interaction: { mode: 'index', intersect: false },
             plugins: {
-                legend: {
-                    display: true,
-                    position: 'top',
-                    labels: {
-                        usePointStyle: true,
-                        padding: 15,
-                        font: {
-                            size: 12,
-                            weight: '600'
-                        }
-                    }
-                },
-                tooltip: {
-                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                    padding: 12,
-                    borderRadius: 8,
-                    titleFont: {
-                        size: 14,
-                        weight: '600'
-                    },
-                    bodyFont: {
-                        size: 13
-                    }
-                }
+                legend: { align: 'end', labels: { usePointStyle: true } }
             },
             scales: {
-                x: {
-                    grid: {
-                        display: false
-                    },
-                    title: {
-                        display: true,
-                        text: 'Tanggal',
-                        font: {
-                            size: 13,
-                            weight: '600'
-                        }
-                    },
-                    ticks: {
-                        font: {
-                            size: 12
-                        }
-                    }
-                },
-                y: {
-                    beginAtZero: true,
-                    grid: {
-                        color: 'rgba(0, 0, 0, 0.05)'
-                    },
-                    title: {
-                        display: true,
-                        text: 'Jumlah Karyawan',
-                        font: {
-                            size: 13,
-                            weight: '600'
-                        }
-                    },
-                    ticks: {
-                        font: {
-                            size: 12
-                        }
-                    }
-                }
+                y: { grid: { borderDash: [4, 4], color: '#f1f5f9' }, beginAtZero: true },
+                x: { grid: { display: false } }
             }
         }
     });
 });
 </script>
-
 @endsection
