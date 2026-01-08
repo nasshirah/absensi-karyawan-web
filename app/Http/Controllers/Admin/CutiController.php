@@ -10,13 +10,23 @@ use Illuminate\Support\Facades\Auth;
 
 class CutiController extends Controller
 {
+    const MAX_CUTI_TAHUNAN = 12;
+
     public function index(Request $request)
     {
         $status = $request->input('status');
+
         $items = LeaveRequest::with(['user','reviewer'])
-            ->when($status, fn($q) => $q->where('status', $status))
+            ->when($status, function ($q) use ($status) {
+                $q->where('status', $status);
+            })
             ->orderByDesc('created_at')
-            ->paginate(20)->withQueryString();
+            ->paginate(20)
+            ->withQueryString();
+
+        // 🔴 WAJIB: inject sisa cuti
+        $this->injectSisaCuti($items);
+
         return view('admin.cuti.index', compact('items','status'));
     }
 
@@ -26,12 +36,20 @@ class CutiController extends Controller
             ->where('status', 'pending')
             ->orderBy('start_date')
             ->paginate(20);
+
+        // 🔴 WAJIB: inject sisa cuti
+        $this->injectSisaCuti($items);
+
         return view('admin.cuti.pending', compact('items'));
     }
 
     public function review(LeaveRequest $leaveRequest)
     {
-        return view('admin.cuti.review', ['leave' => $leaveRequest]);
+        return view('admin.cuti.review', [
+            'leave'    => $leaveRequest,
+            'usedDays' => $this->usedLeaveDaysThisYear($leaveRequest->user_id),
+            'maxDays'  => self::MAX_CUTI_TAHUNAN,
+        ]);
     }
 
     public function process(Request $request, LeaveRequest $leaveRequest)
@@ -41,13 +59,61 @@ class CutiController extends Controller
             'reviewed_reason' => 'nullable|string|max:2000',
         ]);
 
-        $leaveRequest->status = $data['action'] === 'approve' ? 'approved' : 'rejected';
+        $totalDays = Carbon::parse($leaveRequest->start_date)
+            ->diffInDays(Carbon::parse($leaveRequest->end_date)) + 1;
+
+        if ($data['action'] === 'approve') {
+
+            $used = $this->usedLeaveDaysThisYear($leaveRequest->user_id);
+
+            if (($used + $totalDays) > self::MAX_CUTI_TAHUNAN) {
+                return back()->withErrors([
+                    'limit' => 'Jatah cuti karyawan telah melebihi '
+                        . self::MAX_CUTI_TAHUNAN
+                        . ' hari. Sisa: '
+                        . max(0, self::MAX_CUTI_TAHUNAN - $used)
+                        . ' hari.'
+                ]);
+            }
+
+            $leaveRequest->status = 'approved';
+        } else {
+            $leaveRequest->status = 'rejected';
+        }
+
         $leaveRequest->reviewed_by = Auth::id();
         $leaveRequest->reviewed_reason = $data['reviewed_reason'] ?? null;
-        $leaveRequest->reviewed_at = Carbon::now();
+        $leaveRequest->reviewed_at = now();
         $leaveRequest->save();
 
-        return redirect()->route('admin.cuti.pending')->with('success', 'Pengajuan cuti telah diperbarui.');
+        return redirect()
+            ->route('admin.cuti.pending')
+            ->with('success', 'Pengajuan cuti berhasil diperbarui.');
+    }
+
+    // ===============================
+    // HELPER: HITUNG CUTI TERPAKAI
+    // ===============================
+    private function usedLeaveDaysThisYear($userId)
+    {
+        return LeaveRequest::where('user_id', $userId)
+            ->where('status', 'approved')
+            ->whereYear('start_date', date('Y'))
+            ->get()
+            ->sum(function ($leave) {
+                return Carbon::parse($leave->start_date)
+                    ->diffInDays(Carbon::parse($leave->end_date)) + 1;
+            });
+    }
+
+    // ===============================
+    // HELPER: INJECT SISA CUTI
+    // ===============================
+    private function injectSisaCuti($items)
+    {
+        foreach ($items as $leave) {
+            $used = $this->usedLeaveDaysThisYear($leave->user_id);
+            $leave->sisa_cuti = max(0, self::MAX_CUTI_TAHUNAN - $used);
+        }
     }
 }
-
