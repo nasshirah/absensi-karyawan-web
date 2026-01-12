@@ -95,5 +95,40 @@ class AbsensiController extends Controller
             'year' => $year,
         ]);
     }
+
+    public function exportExcel(Request $request)
+    {
+        $month = $request->month ?? date('m');
+        $year = $request->year ?? date('Y');
+        $q = $request->q;
+        
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\AbsensiExport($month, $year, $q), "absensi-{$month}-{$year}.xlsx");
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $month = $request->month ?? date('m');
+        $year = $request->year ?? date('Y');
+        $q = $request->q;
+
+        $start = \Illuminate\Support\Carbon::createFromDate($year, $month, 1)->startOfMonth();
+        $end = (clone $start)->endOfMonth();
+
+        $items = \App\Models\Attendance::with('user')
+            ->whereBetween('date', [$start->toDateString(), $end->toDateString()])
+            ->when($q, fn($qBuilder) => $qBuilder->whereHas('user', function($u) use ($q) {
+                $u->where('name','like',"%{$q}%")->orWhere('email','like',"%{$q}%");
+            }))
+            ->orderByDesc('date')
+            ->get();
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.exports.absensi', [
+            'items' => $items,
+            'month' => $month,
+            'year' => $year,
+        ])->setPaper('a4', 'landscape');
+
+        return $pdf->download("absensi-{$month}-{$year}.pdf");
+    }
 }
 

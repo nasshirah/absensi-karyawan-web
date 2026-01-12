@@ -1,6 +1,6 @@
-@extends('layouts.karyawan')
-@php($title = 'Riwayat Absensi')
-@section('content')
+
+<?php ($title = 'Riwayat Absensi'); ?>
+<?php $__env->startSection('content'); ?>
 
 <style>
     .premium-card {
@@ -305,4 +305,6 @@
     </div>
 </div>
 
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.karyawan', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\laragon\www\Absensi_Karyawan\resources\views/karyawan/absensi/riwayat.blade.php ENDPATH**/ ?>

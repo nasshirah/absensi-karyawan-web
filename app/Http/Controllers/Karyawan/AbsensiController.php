@@ -13,7 +13,7 @@ class AbsensiController extends Controller
     public function index()
     {
         $user = Auth::user();
-        $today = Carbon::today()->toDateString();
+        $today = Carbon::now('Asia/Jakarta')->toDateString();
         $attendance = Attendance::firstOrNew([
             'user_id' => $user->id,
             'date' => $today,
@@ -25,7 +25,7 @@ class AbsensiController extends Controller
     public function checkIn(Request $request)
     {
         $user = Auth::user();
-        $now = Carbon::now();
+        $now = Carbon::now('Asia/Jakarta');
         $today = $now->toDateString();
         $attendance = Attendance::firstOrNew(['user_id' => $user->id, 'date' => $today]);
 
@@ -34,15 +34,18 @@ class AbsensiController extends Controller
         }
 
         $attendance->check_in = $now->format('H:i:s');
-        // aturan sederhana: telat jika setelah 08:00
-        $startWork = Carbon::parse($today.' 08:00:00');
-        if ($now->greaterThan($startWork)) {
-            $attendance->status = 'late';
-            $attendance->minutes_late = $startWork->diffInMinutes($now);
+        
+        // Jam masuk: 09:00:00 Strict
+        $limitIn = Carbon::createFromFormat('Y-m-d H:i:s', $today . ' 09:00:00', 'Asia/Jakarta');
+
+        if ($now->greaterThan($limitIn)) {
+            $attendance->status = 'LATE';
+            $attendance->minutes_late = $limitIn->diffInMinutes($now);
         } else {
-            $attendance->status = 'present';
+            $attendance->status = 'ON TIME';
             $attendance->minutes_late = 0;
         }
+        $attendance->overtime_minutes = 0; // Initialize
         $attendance->save();
 
         return back()->with('success', 'Berhasil absen masuk.');
@@ -51,7 +54,7 @@ class AbsensiController extends Controller
     public function checkOut(Request $request)
     {
         $user = Auth::user();
-        $now = Carbon::now();
+        $now = Carbon::now('Asia/Jakarta');
         $today = $now->toDateString();
         $attendance = Attendance::where('user_id', $user->id)->whereDate('date', $today)->first();
 
@@ -63,6 +66,26 @@ class AbsensiController extends Controller
         }
 
         $attendance->check_out = $now->format('H:i:s');
+        
+        // Jam pulang: 17:00:00 Strict
+        $limitOut = Carbon::createFromFormat('Y-m-d H:i:s', $today . ' 17:00:00', 'Asia/Jakarta');
+
+        if ($now->greaterThan($limitOut)) {
+            // Calculate overtime
+            $overtime = $limitOut->diffInMinutes($now);
+            $attendance->overtime_minutes = $overtime;
+            
+            // Append Status
+            // Current status could be 'ON TIME' or 'LATE'
+            $attendance->status = $attendance->status . ' + OVERTIME';
+        } else {
+            $attendance->overtime_minutes = 0;
+            // Status Pulang = NORMAL (No change to main string, or maybe append + NORMAL?)
+            // Requirement 10 example: "LATE" (alone) implies Late in, Normal out.
+            // Requirement 11: "LATE + OVERTIME".
+            // So we do not append anything if Normal.
+        }
+        
         $attendance->save();
 
         return back()->with('success', 'Berhasil absen pulang.');
@@ -82,6 +105,19 @@ class AbsensiController extends Controller
             ->get();
 
         return view('karyawan.absensi.riwayat', compact('items','month','year'));
+    }
+
+    public function destroy(Attendance $attendance)
+    {
+        $user = Auth::user();
+        
+        // Only allow deletion of own attendance records
+        if ($attendance->user_id !== $user->id) {
+            return back()->withErrors('Anda tidak memiliki akses untuk menghapus data ini.');
+        }
+
+        $attendance->delete();
+        return back()->with('success', 'Data absensi berhasil dihapus.');
     }
 }
 

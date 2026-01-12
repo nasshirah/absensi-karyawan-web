@@ -1,6 +1,5 @@
-@extends('layouts.metronic')
-@php($title = 'Data Karyawan')
-@section('content')
+<?php ($title = 'Data Karyawan'); ?>
+<?php $__env->startSection('content'); ?>
 
 <style>
     .premium-container {
@@ -317,9 +316,9 @@
         opacity: 0;
     }
 
-    @for ($i = 1; $i <= 10; $i++)
-        .delay-{{ $i }} { animation-delay: {{ $i * 100 }}ms; }
-    @endfor
+    <?php for($i = 1; $i <= 10; $i++): ?>
+        .delay-<?php echo e($i); ?> { animation-delay: <?php echo e($i * 100); ?>ms; }
+    <?php endfor; ?>
 </style>
 
 <div class="premium-container">
@@ -331,8 +330,8 @@
         </div>
         
         <div class="d-flex gap-2 align-items-center">
-            <form action="{{ route('admin.karyawan.index') }}" method="GET" class="search-container">
-                <input type="text" class="form-control search-input" placeholder="Cari nama atau email..." name="q" value="{{ $q }}" autocomplete="off">
+            <form action="<?php echo e(route('admin.karyawan.index')); ?>" method="GET" class="search-container">
+                <input type="text" class="form-control search-input" placeholder="Cari nama atau email..." name="q" value="<?php echo e($q); ?>" autocomplete="off">
                 <i class="fa-solid fa-magnifying-glass search-icon"></i>
             </form>
             
@@ -343,13 +342,13 @@
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg" aria-labelledby="exportDropdown" style="border-radius: 12px; padding: 0.5rem;">
                     <li>
-                        <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="{{ route('admin.karyawan.export.excel', ['q' => $q]) }}" style="border-radius: 8px;">
+                        <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="<?php echo e(route('admin.karyawan.export.excel', ['q' => $q])); ?>" style="border-radius: 8px;">
                             <i class="fa-regular fa-file-excel text-success"></i>
                             Excel (.xlsx)
                         </a>
                     </li>
                     <li>
-                        <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="{{ route('admin.karyawan.export.pdf', ['q' => $q]) }}" style="border-radius: 8px;">
+                        <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="<?php echo e(route('admin.karyawan.export.pdf', ['q' => $q])); ?>" style="border-radius: 8px;">
                             <i class="fa-regular fa-file-pdf text-danger"></i>
                             PDF (.pdf)
                         </a>
@@ -357,7 +356,7 @@
                 </ul>
             </div>
 
-            <a href="{{ route('admin.karyawan.create') }}" class="btn btn-premium btn-primary-gradient">
+            <a href="<?php echo e(route('admin.karyawan.create')); ?>" class="btn btn-premium btn-primary-gradient">
                 <i class="fa-solid fa-plus-circle"></i>
                 <span>Tambah Karyawan</span>
             </a>
@@ -377,13 +376,14 @@
             <div class="text-end">Aksi</div>
         </div>
 
-        @forelse($users as $index => $u)
-            <div class="data-card animate-entry delay-{{ $index + 1 }}" style="animation-delay: {{ ($index + 1) * 0.1 }}s">
+        <?php $__empty_1 = true; $__currentLoopData = $users; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $u): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+            <div class="data-card animate-entry delay-<?php echo e($index + 1); ?>" style="animation-delay: <?php echo e(($index + 1) * 0.1); ?>s">
                 <div class="d-flex w-100 align-items-center">
                     <!-- Avatar section -->
                     <div class="avatar-wrapper flex-shrink-0">
                         <div class="avatar-premium">
-                            {{ strtoupper(substr($u->name, 0, 1)) }}
+                            <?php echo e(strtoupper(substr($u->name, 0, 1))); ?>
+
                         </div>
                     </div>
 
@@ -391,61 +391,63 @@
                     <div class="card-info flex-grow-1">
                         <!-- Name & ID -->
                         <div class="info-group">
-                            <div class="main-text">{{ $u->name }}</div>
-                            <div class="sub-text">ID: #{{ str_pad($u->id, 4, '0', STR_PAD_LEFT) }}</div>
+                            <div class="main-text"><?php echo e($u->name); ?></div>
+                            <div class="sub-text">ID: #<?php echo e(str_pad($u->id, 4, '0', STR_PAD_LEFT)); ?></div>
                         </div>
 
                         <!-- Email -->
                         <div class="info-group">
                             <div class="d-flex align-items-center gap-2">
                                 <i class="fa-regular fa-envelope text-muted" style="font-size: 0.8rem;"></i>
-                                <span class="info-value" style="font-weight: 500;">{{ $u->email }}</span>
+                                <span class="info-value" style="font-weight: 500;"><?php echo e($u->email); ?></span>
                             </div>
                         </div>
 
                         <!-- Division -->
                         <div class="info-group">
-                            @if($u->division)
+                            <?php if($u->division): ?>
                             <div class="premium-badge badge-purple">
                                 <i class="fa-solid fa-layer-group" style="font-size: 0.7rem;"></i>
-                                {{ $u->division }}
+                                <?php echo e($u->division); ?>
+
                             </div>
-                            @else
+                            <?php else: ?>
                             <span class="text-muted text-sm">-</span>
-                            @endif
+                            <?php endif; ?>
                         </div>
 
                         <!-- Position -->
                         <div class="info-group">
-                            @if($u->position)
+                            <?php if($u->position): ?>
                             <div class="premium-badge badge-blue">
                                 <i class="fa-solid fa-briefcase" style="font-size: 0.7rem;"></i>
-                                {{ $u->position }}
+                                <?php echo e($u->position); ?>
+
                             </div>
-                            @else
+                            <?php else: ?>
                             <span class="text-muted text-sm">-</span>
-                            @endif
+                            <?php endif; ?>
                         </div>
 
                         <!-- Join Date -->
                         <div class="info-group">
-                            @if($u->join_date)
-                            <div class="info-value">{{ \Illuminate\Support\Carbon::parse($u->join_date)->format('d M Y') }}</div>
-                            <div class="text-xs text-muted" style="font-size: 0.75rem;">{{ \Illuminate\Support\Carbon::parse($u->join_date)->diffForHumans() }}</div>
-                            @else
+                            <?php if($u->join_date): ?>
+                            <div class="info-value"><?php echo e(\Illuminate\Support\Carbon::parse($u->join_date)->format('d M Y')); ?></div>
+                            <div class="text-xs text-muted" style="font-size: 0.75rem;"><?php echo e(\Illuminate\Support\Carbon::parse($u->join_date)->diffForHumans()); ?></div>
+                            <?php else: ?>
                             <span class="text-muted">-</span>
-                            @endif
+                            <?php endif; ?>
                         </div>
 
                         <!-- Actions -->
                         <div class="d-flex justify-content-end gap-1">
-                            <a href="{{ route('admin.karyawan.edit', $u) }}" class="action-btn edit" title="Edit Data">
+                            <a href="<?php echo e(route('admin.karyawan.edit', $u)); ?>" class="action-btn edit" title="Edit Data">
                                 <i class="fa-solid fa-pen-to-square"></i>
                             </a>
                             
-                            <form action="{{ route('admin.karyawan.destroy', $u) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah anda yakin ingin menghapus data {{ $u->name }}?');">
-                                @csrf
-                                @method('DELETE')
+                            <form action="<?php echo e(route('admin.karyawan.destroy', $u)); ?>" method="POST" class="d-inline" onsubmit="return confirm('Apakah anda yakin ingin menghapus data <?php echo e($u->name); ?>?');">
+                                <?php echo csrf_field(); ?>
+                                <?php echo method_field('DELETE'); ?>
                                 <button type="submit" class="action-btn delete" title="Hapus Karyawan">
                                     <i class="fa-solid fa-trash-can"></i>
                                 </button>
@@ -454,7 +456,7 @@
                     </div>
                 </div>
             </div>
-        @empty
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
             <div class="text-center py-5 animate-entry">
                 <div class="mb-3">
                     <div style="width: 80px; height: 80px; background: #f1f5f9; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; color: #cbd5e1; font-size: 2rem;">
@@ -463,20 +465,23 @@
                 </div>
                 <h5 class="text-muted fw-bold">Tidak ada data karyawan</h5>
                 <p class="text-muted small">Coba ubah kata kunci pencarian atau tambah karyawan baru.</p>
-                <a href="{{ route('admin.karyawan.index') }}" class="btn btn-sm btn-link text-decoration-none">Reset Pencarian</a>
+                <a href="<?php echo e(route('admin.karyawan.index')); ?>" class="btn btn-sm btn-link text-decoration-none">Reset Pencarian</a>
             </div>
-        @endforelse
+        <?php endif; ?>
     </div>
 
     <!-- Pagination -->
     <div class="pagination-wrapper">
         <div class="text-muted small">
-            Menampilkan <span class="fw-bold text-dark">{{ $users->firstItem() ?? 0 }}</span> sampai <span class="fw-bold text-dark">{{ $users->lastItem() ?? 0 }}</span> dari <span class="fw-bold text-dark">{{ $users->total() }}</span> total data
+            Menampilkan <span class="fw-bold text-dark"><?php echo e($users->firstItem() ?? 0); ?></span> sampai <span class="fw-bold text-dark"><?php echo e($users->lastItem() ?? 0); ?></span> dari <span class="fw-bold text-dark"><?php echo e($users->total()); ?></span> total data
         </div>
         <div>
-            {{ $users->appends(['q' => $q])->links() }}
+            <?php echo e($users->appends(['q' => $q])->links()); ?>
+
         </div>
     </div>
 </div>
 
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.metronic', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\laragon\www\Absensi_Karyawan\resources\views/admin/karyawan/index.blade.php ENDPATH**/ ?>

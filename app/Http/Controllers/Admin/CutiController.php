@@ -91,6 +91,13 @@ class CutiController extends Controller
             ->with('success', 'Pengajuan cuti berhasil diperbarui.');
     }
 
+    public function destroy(LeaveRequest $leaveRequest)
+    {
+        $leaveRequest->delete();
+
+        return back()->with('success', 'Data cuti berhasil dihapus.');
+    }
+
     // ===============================
     // HELPER: HITUNG CUTI TERPAKAI
     // ===============================
@@ -115,5 +122,28 @@ class CutiController extends Controller
             $used = $this->usedLeaveDaysThisYear($leave->user_id);
             $leave->sisa_cuti = max(0, self::MAX_CUTI_TAHUNAN - $used);
         }
+    }
+
+    public function exportExcel(Request $request)
+    {
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\CutiExport($request->status), 'data-cuti.xlsx');
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $status = $request->status;
+        $items = \App\Models\LeaveRequest::with(['user','reviewer'])
+            ->when($status, function ($q) use ($status) {
+                $q->where('status', $status);
+            })
+            ->orderByDesc('created_at')
+            ->get();
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.exports.cuti', [
+            'items' => $items,
+            'status' => $status,
+        ])->setPaper('a4', 'landscape');
+
+        return $pdf->download('data-cuti.pdf');
     }
 }

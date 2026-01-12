@@ -95,5 +95,26 @@ class KaryawanController extends Controller
         $karyawan->delete();
         return redirect()->route('admin.karyawan.index')->with('success', 'Karyawan berhasil dihapus.');
     }
+
+    public function exportExcel(Request $request)
+    {
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\KaryawanExport($request->q), 'data-karyawan.xlsx');
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $q = $request->q;
+        $users = User::role('karyawan')
+            ->when($q, fn($query) => $query->where(fn($sub) => $sub->where('name','like',"%{$q}%")->orWhere('email','like',"%{$q}%")))
+            ->orderBy('name')
+            ->get();
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.exports.karyawan', [
+            'users' => $users,
+            'title' => 'Data Karyawan'
+        ])->setPaper('a4', 'landscape');
+
+        return $pdf->download('data-karyawan.pdf');
+    }
 }
 

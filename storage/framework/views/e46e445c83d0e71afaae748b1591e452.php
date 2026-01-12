@@ -1,6 +1,5 @@
-@extends('layouts.karyawan')
-@php($title = 'Presensi Harian')
-@section('content')
+<?php ($title = 'Presensi Harian'); ?>
+<?php $__env->startSection('content'); ?>
 
 <style>
     .station-container {
@@ -180,13 +179,15 @@
                 }
             }
         ?>
-        <div class="status-badge {{ $statusClass }}">
-            {{ $statusText }}
+        <div class="status-badge <?php echo e($statusClass); ?>">
+            <?php echo e($statusText); ?>
+
         </div>
 
         <div class="date-display">
             <i class="fa-regular fa-calendar-days me-2"></i>
-            {{ \Illuminate\Support\Carbon::parse($today)->translatedFormat('l, d F Y') }}
+            <?php echo e(\Illuminate\Support\Carbon::parse($today)->translatedFormat('l, d F Y')); ?>
+
         </div>
 
         <div class="clock-display" id="liveClock">
@@ -204,22 +205,22 @@
 
         <!-- Action Area -->
         <div class="action-area">
-            <form action="{{ route('karyawan.absensi.checkin') }}" method="POST">
-                @csrf
-                <button type="submit" class="btn-action-lg btn-checkin" {{ ($attendance->exists && $attendance->check_in) ? 'disabled' : '' }}>
+            <form action="<?php echo e(route('karyawan.absensi.checkin')); ?>" method="POST">
+                <?php echo csrf_field(); ?>
+                <button type="submit" class="btn-action-lg btn-checkin" <?php echo e(($attendance->exists && $attendance->check_in) ? 'disabled' : ''); ?>>
                     <i class="fa-solid fa-fingerprint"></i> Check-in
                 </button>
             </form>
 
-            <form action="{{ route('karyawan.absensi.checkout') }}" method="POST">
-                @csrf
-                <button type="submit" class="btn-action-lg btn-checkout" {{ (!$attendance->exists || !$attendance->check_in || $attendance->check_out) ? 'disabled' : '' }}>
+            <form action="<?php echo e(route('karyawan.absensi.checkout')); ?>" method="POST">
+                <?php echo csrf_field(); ?>
+                <button type="submit" class="btn-action-lg btn-checkout" <?php echo e((!$attendance->exists || !$attendance->check_in || $attendance->check_out) ? 'disabled' : ''); ?>>
                     <i class="fa-solid fa-person-walking-arrow-right"></i> Check-out
                 </button>
             </form>
         </div>
 
-        @if ($attendance->exists)
+        <?php if($attendance->exists): ?>
         <div class="stats-grid" style="grid-template-columns: repeat(3, 1fr);">
             <!-- Row 1: Times -->
             <div class="stat-item">
@@ -227,7 +228,8 @@
                     <i class="fa-solid fa-arrow-right-to-bracket me-1 text-success"></i> Jam Masuk
                 </div>
                 <div class="stat-value">
-                    {{ $attendance->check_in ? \Illuminate\Support\Carbon::parse($attendance->check_in)->format('H:i') : '-' }}
+                    <?php echo e($attendance->check_in ? \Illuminate\Support\Carbon::parse($attendance->check_in)->format('H:i') : '-'); ?>
+
                 </div>
             </div>
             
@@ -236,7 +238,8 @@
                     <i class="fa-solid fa-arrow-right-from-bracket me-1 text-danger"></i> Jam Pulang
                 </div>
                 <div class="stat-value">
-                    {{ $attendance->check_out ? \Illuminate\Support\Carbon::parse($attendance->check_out)->format('H:i') : '-' }}
+                    <?php echo e($attendance->check_out ? \Illuminate\Support\Carbon::parse($attendance->check_out)->format('H:i') : '-'); ?>
+
                 </div>
             </div>
 
@@ -244,11 +247,11 @@
             <div class="stat-item">
                 <div class="stat-label">Status Masuk</div>
                 <div class="stat-value">
-                    @if($attendance->minutes_late > 0)
+                    <?php if($attendance->minutes_late > 0): ?>
                         <span class="text-danger">LATE</span>
-                    @else
+                    <?php else: ?>
                         <span class="text-success">ON TIME</span>
-                    @endif
+                    <?php endif; ?>
                 </div>
             </div>
 
@@ -258,7 +261,8 @@
                     <i class="fa-solid fa-triangle-exclamation me-1 text-warning"></i> Telat
                 </div>
                 <div class="stat-value text-danger">
-                    {{ $attendance->minutes_late > 0 ? $attendance->minutes_late . 'm' : '-' }}
+                    <?php echo e($attendance->minutes_late > 0 ? $attendance->minutes_late . 'm' : '-'); ?>
+
                 </div>
             </div>
 
@@ -267,7 +271,8 @@
                     <i class="fa-solid fa-clock-rotate-left me-1 text-primary"></i> Lembur
                 </div>
                 <div class="stat-value text-primary">
-                    {{ $attendance->overtime_minutes > 0 ? $attendance->overtime_minutes . 'm' : '-' }}
+                    <?php echo e($attendance->overtime_minutes > 0 ? $attendance->overtime_minutes . 'm' : '-'); ?>
+
                 </div>
             </div>
 
@@ -275,25 +280,25 @@
             <div class="stat-item">
                 <div class="stat-label">Status Pulang</div>
                 <div class="stat-value">
-                    @if($attendance->check_out)
-                        @if($attendance->overtime_minutes > 0)
+                    <?php if($attendance->check_out): ?>
+                        <?php if($attendance->overtime_minutes > 0): ?>
                             <span class="text-primary">OVERTIME</span>
-                        @else
+                        <?php else: ?>
                             <span class="text-success">NORMAL</span>
-                        @endif
-                    @else
+                        <?php endif; ?>
+                    <?php else: ?>
                         <span class="text-muted">-</span>
-                    @endif
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
-        @endif
+        <?php endif; ?>
     </div>
 </div>
 
 <script>
     // Initialize with server time to ensure accuracy
-    let serverTime = new Date("{{ now('Asia/Jakarta')->format('Y-m-d H:i:s') }}");
+    let serverTime = new Date("<?php echo e(now('Asia/Jakarta')->format('Y-m-d H:i:s')); ?>");
 
     function updateClock() {
         // Increment server time by 1 second
@@ -310,4 +315,6 @@
     setInterval(updateClock, 1000);
     updateClock();
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.karyawan', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\laragon\www\Absensi_Karyawan\resources\views/karyawan/absensi/index.blade.php ENDPATH**/ ?>

@@ -130,6 +130,26 @@
         <button class="btn btn-dark" type="submit">
             <i class="fa-solid fa-filter me-2"></i>Filter
         </button>
+
+        <div class="dropdown ms-auto">
+            <button class="btn btn-outline-primary dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fa-solid fa-file-export me-1"></i> Export
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="exportDropdown" style="border-radius: 12px;">
+                <li>
+                    <a class="dropdown-item d-flex align-items-center gap-2" href="{{ route('admin.cuti.export.excel', ['status' => request('status')]) }}">
+                        <i class="fa-regular fa-file-excel text-success"></i>
+                        Excel (.xlsx)
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item d-flex align-items-center gap-2" href="{{ route('admin.cuti.export.pdf', ['status' => request('status')]) }}">
+                        <i class="fa-regular fa-file-pdf text-danger"></i>
+                        PDF (.pdf)
+                    </a>
+                </li>
+            </ul>
+        </div>
     </form>
 
     <!-- DATA -->
@@ -206,15 +226,22 @@
                     </div>
 
                     <!-- Aksi -->
-                    <div class="text-center">
+                    <div class="text-center d-flex gap-2 justify-content-center">
                         @if ($leave->status === 'pending')
                             <a href="{{ route('admin.cuti.review', $leave) }}"
                                class="btn btn-sm btn-outline-primary">
-                                Review
+                                <i class="fa-solid fa-magnifying-glass"></i>
                             </a>
-                        @else
-                            -
                         @endif
+                        
+                        <form action="{{ route('admin.cuti.destroy', $leave) }}" method="POST" 
+                              onsubmit="return confirm('Apakah Anda yakin ingin menghapus data cuti ini?')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>

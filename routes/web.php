@@ -35,17 +35,24 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/karyawan/{karyawan}/edit', [KaryawanController::class, 'edit'])->name('admin.karyawan.edit');
     Route::put('/admin/karyawan/{karyawan}', [KaryawanController::class, 'update'])->name('admin.karyawan.update');
     Route::delete('/admin/karyawan/{karyawan}', [KaryawanController::class, 'destroy'])->name('admin.karyawan.destroy');
+    Route::get('/admin/karyawan/export/excel', [KaryawanController::class, 'exportExcel'])->name('admin.karyawan.export.excel');
+    Route::get('/admin/karyawan/export/pdf', [KaryawanController::class, 'exportPdf'])->name('admin.karyawan.export.pdf');
     // Data Absensi (Views + filter)
     Route::get('/admin/absensi', [AbsensiController::class, 'index'])->name('admin.absensi.index');
     Route::get('/admin/absensi/per-karyawan', [AbsensiController::class, 'perKaryawan'])->name('admin.absensi.per-karyawan');
     Route::get('/admin/absensi/per-tanggal', [AbsensiController::class, 'perTanggal'])->name('admin.absensi.per-tanggal');
     Route::get('/admin/absensi/filter', [AbsensiController::class, 'filter'])->name('admin.absensi.filter');
+    Route::get('/admin/absensi/export/excel', [AbsensiController::class, 'exportExcel'])->name('admin.absensi.export.excel');
+    Route::get('/admin/absensi/export/pdf', [AbsensiController::class, 'exportPdf'])->name('admin.absensi.export.pdf');
     // Persetujuan Cuti + Data Cuti
     Route::get('/admin/cuti/persetujuan', [CutiController::class, 'pending'])->name('admin.cuti.approval');
     Route::get('/admin/cuti/pending', [CutiController::class, 'pending'])->name('admin.cuti.pending');
     Route::get('/admin/cuti/review/{leaveRequest}', [CutiController::class, 'review'])->name('admin.cuti.review');
     Route::post('/admin/cuti/review/{leaveRequest}', [CutiController::class, 'process'])->name('admin.cuti.process');
     Route::get('/admin/cuti', [CutiController::class, 'index'])->name('admin.cuti.index');
+    Route::delete('/admin/cuti/{leaveRequest}', [CutiController::class, 'destroy'])->name('admin.cuti.destroy');
+    Route::get('/admin/cuti/export/excel', [CutiController::class, 'exportExcel'])->name('admin.cuti.export.excel');
+    Route::get('/admin/cuti/export/pdf', [CutiController::class, 'exportPdf'])->name('admin.cuti.export.pdf');
     Route::view('/admin/cuti/riwayat', 'admin.cuti.riwayat')->name('admin.cuti.riwayat');
     Route::view('/admin/cuti/jenis', 'admin.cuti.jenis')->name('admin.cuti.jenis');
     Route::view('/admin/cuti/sisa', 'admin.cuti.sisa')->name('admin.cuti.sisa');
@@ -74,6 +81,7 @@ Route::middleware(['auth', 'role:karyawan'])->group(function () {
     Route::post('/karyawan/absensi/check-in', [KaryawanAbsensiController::class, 'checkIn'])->name('karyawan.absensi.checkin');
     Route::post('/karyawan/absensi/check-out', [KaryawanAbsensiController::class, 'checkOut'])->name('karyawan.absensi.checkout');
     Route::get('/karyawan/absensi/riwayat', [KaryawanAbsensiController::class, 'riwayat'])->name('karyawan.absensi.riwayat');
+    Route::delete('/karyawan/absensi/{attendance}', [KaryawanAbsensiController::class, 'destroy'])->name('karyawan.absensi.destroy');
 
     // Cuti
     Route::get('/karyawan/cuti/ajukan', [KaryawanCutiController::class, 'ajukan'])->name('karyawan.cuti.ajukan');

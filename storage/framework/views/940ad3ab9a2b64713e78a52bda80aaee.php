@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ $title ?? 'Admin' }} · Absensi Karyawan</title>
+    <title><?php echo e($title ?? 'Admin'); ?> · Absensi Karyawan</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet"/>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('css/metronic-lite.css') }}">
+    <link rel="stylesheet" href="<?php echo e(asset('css/metronic-lite.css')); ?>">
 
     <style>
         :root {
@@ -344,37 +344,37 @@
         <nav class="aside-nav">
             <div class="nav-section-title">Main Menu</div>
             
-            <a class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}"
-               href="{{ route('admin.dashboard') }}">
+            <a class="nav-link <?php echo e(request()->routeIs('admin.dashboard') ? 'active' : ''); ?>"
+               href="<?php echo e(route('admin.dashboard')); ?>">
                 <i class="fa-solid fa-gauge-high"></i> Dashboard
             </a>
 
-            <a class="nav-link {{ request()->routeIs('admin.karyawan.*') ? 'active' : '' }}"
-               href="{{ route('admin.karyawan.index') }}">
+            <a class="nav-link <?php echo e(request()->routeIs('admin.karyawan.*') ? 'active' : ''); ?>"
+               href="<?php echo e(route('admin.karyawan.index')); ?>">
                 <i class="fa-solid fa-users"></i> Data Karyawan
             </a>
 
-            <a class="nav-link {{ request()->routeIs('admin.absensi.*') ? 'active' : '' }}"
-               href="{{ route('admin.absensi.index') }}">
+            <a class="nav-link <?php echo e(request()->routeIs('admin.absensi.*') ? 'active' : ''); ?>"
+               href="<?php echo e(route('admin.absensi.index')); ?>">
                 <i class="fa-solid fa-clipboard-user"></i> Data Absensi
             </a>
 
             <div class="nav-section-title">Cuti Management</div>
 
-            <a class="nav-link {{ request()->routeIs('admin.cuti.approval') ? 'active' : '' }}"
-               href="{{ route('admin.cuti.approval') }}">
+            <a class="nav-link <?php echo e(request()->routeIs('admin.cuti.approval') ? 'active' : ''); ?>"
+               href="<?php echo e(route('admin.cuti.approval')); ?>">
                 <i class="fa-solid fa-square-check"></i> Persetujuan Cuti
             </a>
 
-            <a class="nav-link {{ request()->routeIs('admin.cuti.index') ? 'active' : '' }}"
-               href="{{ route('admin.cuti.index') }}">
+            <a class="nav-link <?php echo e(request()->routeIs('admin.cuti.index') ? 'active' : ''); ?>"
+               href="<?php echo e(route('admin.cuti.index')); ?>">
                 <i class="fa-solid fa-suitcase-rolling"></i> Data Cuti
             </a>
 
 
 
-            <form action="{{ route('logout') }}" method="POST" class="mt-auto">
-                @csrf
+            <form action="<?php echo e(route('logout')); ?>" method="POST" class="mt-auto">
+                <?php echo csrf_field(); ?>
                 <button class="nav-link logout-btn btn btn-link text-start w-100" type="submit">
                     <i class="fa-solid fa-right-from-bracket"></i> Logout
                 </button>
@@ -384,43 +384,45 @@
 
     <main class="app-main flex-grow-1">
         <header class="app-topbar">
-            <div class="topbar-title">{{ $title ?? 'Admin' }}</div>
+            <div class="topbar-title"><?php echo e($title ?? 'Admin'); ?></div>
             <div class="topbar-user">
                 <div class="user-avatar">
-                    {{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}
+                    <?php echo e(strtoupper(substr(auth()->user()->name ?? 'A', 0, 1))); ?>
+
                 </div>
                 <div class="user-info">
-                    <div class="user-name">{{ auth()->user()->name ?? 'Admin' }}</div>
+                    <div class="user-name"><?php echo e(auth()->user()->name ?? 'Admin'); ?></div>
                     <div class="user-role">Administrator</div>
                 </div>
             </div>
         </header>
 
         <div class="app-content">
-            @if (session('success'))
+            <?php if(session('success')): ?>
                 <div class="alert alert-success">
-                    <i class="fa-solid fa-circle-check me-2"></i>{{ session('success') }}
-                </div>
-            @endif
+                    <i class="fa-solid fa-circle-check me-2"></i><?php echo e(session('success')); ?>
 
-            @if ($errors->any())
+                </div>
+            <?php endif; ?>
+
+            <?php if($errors->any()): ?>
                 <div class="alert alert-danger">
                     <div class="fw-semibold mb-2">
                         <i class="fa-solid fa-triangle-exclamation me-2"></i>Terjadi kesalahan:
                     </div>
                     <ul class="mb-0 ps-3">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
+                        <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                            <li><?php echo e($error); ?></li>
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </ul>
                 </div>
-            @endif
+            <?php endif; ?>
 
-            @yield('content')
+            <?php echo $__env->yieldContent('content'); ?>
         </div>
     </main>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-</html>
+</html><?php /**PATH C:\laragon\www\Absensi_Karyawan\resources\views/layouts/metronic.blade.php ENDPATH**/ ?>

@@ -61,6 +61,26 @@
         <button type="submit" class="btn btn-dark">
             <i class="fa-solid fa-filter me-1"></i> Filter
         </button>
+
+        <div class="dropdown ms-auto">
+            <button class="btn btn-outline-primary dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fa-solid fa-file-export me-1"></i> Export
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow border-0" aria-labelledby="exportDropdown" style="border-radius: 12px;">
+                <li>
+                    <a class="dropdown-item d-flex align-items-center gap-2" href="{{ route('admin.absensi.export.excel', ['month' => $month, 'year' => $year, 'q' => $q]) }}">
+                        <i class="fa-regular fa-file-excel text-success"></i>
+                        Excel (.xlsx)
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item d-flex align-items-center gap-2" href="{{ route('admin.absensi.export.pdf', ['month' => $month, 'year' => $year, 'q' => $q]) }}">
+                        <i class="fa-regular fa-file-pdf text-danger"></i>
+                        PDF (.pdf)
+                    </a>
+                </li>
+            </ul>
+        </div>
     </form>
 
     {{-- LIST DATA --}}

@@ -229,10 +229,19 @@
                         </div>
 
                         <!-- Action -->
-                        <div class="text-end">
+                        <div class="text-end d-flex gap-2 justify-content-end">
                             <a href="{{ route('admin.cuti.review', $leave) }}" class="btn-review">
                                 <i class="fa-solid fa-gavel"></i> Review
                             </a>
+
+                            <form action="{{ route('admin.cuti.destroy', $leave) }}" method="POST" 
+                                  onsubmit="return confirm('Apakah Anda yakin ingin menghapus data cuti ini?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-outline-danger" style="border-radius: 12px; padding: 0.6rem 1rem;">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>
