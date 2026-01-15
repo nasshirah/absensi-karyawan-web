@@ -1,8 +1,6 @@
-@extends('layouts.metronic')
+<?php $__env->startSection('title', 'Data Absensi'); ?>
 
-@section('title', 'Data Absensi')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 
 <style>
     .premium-container { max-width: 1400px; margin: 0 auto; }
@@ -112,21 +110,22 @@
         </div>
         
         <!-- Filter Bar -->
-        <form method="GET" action="{{ route('admin.absensi.index') }}" class="filter-bar d-flex gap-2 align-items-center">
-            <input type="text" name="q" class="form-control-premium" placeholder="Cari nama karyawan..." value="{{ $q ?? '' }}" style="width: 250px;">
+        <form method="GET" action="<?php echo e(route('admin.absensi.index')); ?>" class="filter-bar d-flex gap-2 align-items-center">
+            <input type="text" name="q" class="form-control-premium" placeholder="Cari nama karyawan..." value="<?php echo e($q ?? ''); ?>" style="width: 250px;">
             
             <select name="month" class="form-select-premium" style="width: 140px;">
-                @for ($m = 1; $m <= 12; $m++)
-                    <option value="{{ $m }}" @selected((int)$m === (int)$month)>
-                        {{ \Carbon\Carbon::create()->month($m)->locale('id')->isoFormat('MMMM') }}
+                <?php for($m = 1; $m <= 12; $m++): ?>
+                    <option value="<?php echo e($m); ?>" <?php if((int)$m === (int)$month): echo 'selected'; endif; ?>>
+                        <?php echo e(\Carbon\Carbon::create()->month($m)->locale('id')->isoFormat('MMMM')); ?>
+
                     </option>
-                @endfor
+                <?php endfor; ?>
             </select>
 
             <select name="year" class="form-select-premium" style="width: 100px;">
-                @for ($y = date('Y') - 2; $y <= date('Y') + 1; $y++)
-                    <option value="{{ $y }}" @selected((int)$y === (int)$year)>{{ $y }}</option>
-                @endfor
+                <?php for($y = date('Y') - 2; $y <= date('Y') + 1; $y++): ?>
+                    <option value="<?php echo e($y); ?>" <?php if((int)$y === (int)$year): echo 'selected'; endif; ?>><?php echo e($y); ?></option>
+                <?php endfor; ?>
             </select>
 
             <button type="submit" class="btn btn-dark px-4" style="border-radius: 12px; font-weight: 600;">
@@ -138,8 +137,8 @@
                     <i class="fa-solid fa-download me-1"></i>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2" style="border-radius: 12px;">
-                    <li><a class="dropdown-item px-3 py-2" href="{{ route('admin.absensi.export.excel', request()->all()) }}"><i class="fa-regular fa-file-excel text-success me-2"></i>Excel</a></li>
-                    <li><a class="dropdown-item px-3 py-2" href="{{ route('admin.absensi.export.pdf', request()->all()) }}"><i class="fa-regular fa-file-pdf text-danger me-2"></i>PDF</a></li>
+                    <li><a class="dropdown-item px-3 py-2" href="<?php echo e(route('admin.absensi.export.excel', request()->all())); ?>"><i class="fa-regular fa-file-excel text-success me-2"></i>Excel</a></li>
+                    <li><a class="dropdown-item px-3 py-2" href="<?php echo e(route('admin.absensi.export.pdf', request()->all())); ?>"><i class="fa-regular fa-file-pdf text-danger me-2"></i>PDF</a></li>
                 </ul>
             </div>
         </form>
@@ -159,8 +158,8 @@
             <div class="text-end">Aksi</div>
         </div>
 
-        @forelse ($items as $index => $row)
-            @php
+        <?php $__empty_1 = true; $__currentLoopData = $items; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $row): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+            <?php
                 $status = strtolower($row->status);
                 $statusClass = match ($status) {
                     'late' => 'status-late',
@@ -182,62 +181,64 @@
                     'overtime' => 'fa-briefcase',
                     default => 'fa-circle'
                 };
-            @endphp
+            ?>
 
-            <div class="data-card {{ $statusClass }} animate-entry" style="animation-delay: {{ $index * 0.05 }}s;">
+            <div class="data-card <?php echo e($statusClass); ?> animate-entry" style="animation-delay: <?php echo e($index * 0.05); ?>s;">
                 <div class="card-info">
                     
                     <!-- Tanggal -->
                     <div class="d-flex justify-content-center">
                         <div class="date-box">
-                            <div class="day">{{ \Carbon\Carbon::parse($row->date)->format('d') }}</div>
-                            <div class="month">{{ \Carbon\Carbon::parse($row->date)->format('M') }}</div>
+                            <div class="day"><?php echo e(\Carbon\Carbon::parse($row->date)->format('d')); ?></div>
+                            <div class="month"><?php echo e(\Carbon\Carbon::parse($row->date)->format('M')); ?></div>
                         </div>
                     </div>
 
                     <!-- Karyawan -->
                     <div class="d-flex align-items-center">
                         <div class="avatar-premium me-3" style="width: 40px; height: 40px; font-size: 1rem;">
-                            {{ substr($row->user->name, 0, 1) }}
+                            <?php echo e(substr($row->user->name, 0, 1)); ?>
+
                         </div>
                         <div>
-                            <div class="main-text" style="font-weight: 700; color: #1e293b;">{{ $row->user->name }}</div>
-                            <div class="sub-text" style="font-size: 0.8rem; color: #64748b;">{{ $row->user->division ?? 'Staff' }}</div>
+                            <div class="main-text" style="font-weight: 700; color: #1e293b;"><?php echo e($row->user->name); ?></div>
+                            <div class="sub-text" style="font-size: 0.8rem; color: #64748b;"><?php echo e($row->user->division ?? 'Staff'); ?></div>
                         </div>
                     </div>
 
                     <!-- Status -->
                     <div>
-                        <div class="badge-premium {{ $badgeClass }}">
-                            <i class="fa-solid {{ $icon }}"></i>
-                            {{ ucfirst($row->status) }}
+                        <div class="badge-premium <?php echo e($badgeClass); ?>">
+                            <i class="fa-solid <?php echo e($icon); ?>"></i>
+                            <?php echo e(ucfirst($row->status)); ?>
+
                         </div>
                     </div>
 
                     <!-- Masuk -->
                     <div class="info-group">
-                        <span class="info-value font-monospace">{{ $row->check_in ? \Carbon\Carbon::parse($row->check_in)->format('H:i') : '-' }}</span>
+                        <span class="info-value font-monospace"><?php echo e($row->check_in ? \Carbon\Carbon::parse($row->check_in)->format('H:i') : '-'); ?></span>
                     </div>
 
                     <!-- Pulang -->
                     <div class="info-group">
-                        <span class="info-value font-monospace">{{ $row->check_out ? \Carbon\Carbon::parse($row->check_out)->format('H:i') : '-' }}</span>
+                        <span class="info-value font-monospace"><?php echo e($row->check_out ? \Carbon\Carbon::parse($row->check_out)->format('H:i') : '-'); ?></span>
                     </div>
 
                     <!-- Telat -->
                     <div class="info-group">
-                        @if ($row->minutes_late > 0)
-                            <span class="text-danger fw-bold">{{ $row->minutes_late }}m</span>
-                        @else
+                        <?php if($row->minutes_late > 0): ?>
+                            <span class="text-danger fw-bold"><?php echo e($row->minutes_late); ?>m</span>
+                        <?php else: ?>
                             <span class="text-muted">-</span>
-                        @endif
+                        <?php endif; ?>
                     </div>
 
                     <!-- Aksi -->
                     <div class="text-end">
-                        <form action="{{ route('admin.absensi.destroy', $row->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus data ini?');">
-                            @csrf
-                            @method('DELETE')
+                        <form action="<?php echo e(route('admin.absensi.destroy', $row->id)); ?>" method="POST" onsubmit="return confirm('Yakin ingin menghapus data ini?');">
+                            <?php echo csrf_field(); ?>
+                            <?php echo method_field('DELETE'); ?>
                             <button type="submit" class="action-btn" title="Hapus Data">
                                 <i class="fa-solid fa-trash"></i>
                             </button>
@@ -247,18 +248,21 @@
                 </div>
             </div>
 
-        @empty
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
             <div class="text-center py-5 text-muted">
                 <i class="fa-solid fa-clipboard-list fa-3x mb-3 text-light-emphasis"></i>
                 <p>Tidak ada data absensi untuk periode ini</p>
             </div>
-        @endforelse
+        <?php endif; ?>
     </div>
 
     <!-- Pagination -->
     <div class="mt-4">
-        {{ $items->appends(request()->query())->links() }}
+        <?php echo e($items->appends(request()->query())->links()); ?>
+
     </div>
 
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.metronic', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\laragon\www\Absensi_Karyawan\resources\views/admin/absensi/index.blade.php ENDPATH**/ ?>

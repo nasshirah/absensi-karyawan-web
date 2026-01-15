@@ -204,14 +204,14 @@
 
         <!-- Action Area -->
         <div class="action-area">
-            <form action="{{ route('karyawan.absensi.checkin') }}" method="POST">
+            <form action="{{ route('karyawan.absensi.checkin') }}" method="POST" id="formCheckIn">
                 @csrf
                 <button type="submit" class="btn-action-lg btn-checkin" {{ ($attendance->exists && $attendance->check_in) ? 'disabled' : '' }}>
                     <i class="fa-solid fa-fingerprint"></i> Check-in
                 </button>
             </form>
 
-            <form action="{{ route('karyawan.absensi.checkout') }}" method="POST">
+            <form action="{{ route('karyawan.absensi.checkout') }}" method="POST" id="formCheckOut">
                 @csrf
                 <button type="submit" class="btn-action-lg btn-checkout" {{ (!$attendance->exists || !$attendance->check_in || $attendance->check_out) ? 'disabled' : '' }}>
                     <i class="fa-solid fa-person-walking-arrow-right"></i> Check-out

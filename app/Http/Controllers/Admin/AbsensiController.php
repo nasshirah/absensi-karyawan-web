@@ -130,5 +130,11 @@ class AbsensiController extends Controller
 
         return $pdf->download("absensi-{$month}-{$year}.pdf");
     }
+    public function destroy(Attendance $attendance)
+    {
+        $attendance->delete();
+
+        return redirect()->back()->with('success', 'Data absensi berhasil dihapus.');
+    }
 }
 

@@ -45,6 +45,7 @@ class AbsensiController extends Controller
             $attendance->status = 'ON TIME';
             $attendance->minutes_late = 0;
         }
+        
         $attendance->overtime_minutes = 0; // Initialize
         $attendance->save();
 

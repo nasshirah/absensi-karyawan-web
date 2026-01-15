@@ -44,6 +44,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin/absensi/filter', [AbsensiController::class, 'filter'])->name('admin.absensi.filter');
     Route::get('/admin/absensi/export/excel', [AbsensiController::class, 'exportExcel'])->name('admin.absensi.export.excel');
     Route::get('/admin/absensi/export/pdf', [AbsensiController::class, 'exportPdf'])->name('admin.absensi.export.pdf');
+    Route::delete('/admin/absensi/{attendance}', [AbsensiController::class, 'destroy'])->name('admin.absensi.destroy');
     // Persetujuan Cuti + Data Cuti
     Route::get('/admin/cuti/persetujuan', [CutiController::class, 'pending'])->name('admin.cuti.approval');
     Route::get('/admin/cuti/pending', [CutiController::class, 'pending'])->name('admin.cuti.pending');

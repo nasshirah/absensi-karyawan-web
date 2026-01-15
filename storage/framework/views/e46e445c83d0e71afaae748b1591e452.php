@@ -205,14 +205,14 @@
 
         <!-- Action Area -->
         <div class="action-area">
-            <form action="<?php echo e(route('karyawan.absensi.checkin')); ?>" method="POST">
+            <form action="<?php echo e(route('karyawan.absensi.checkin')); ?>" method="POST" id="formCheckIn">
                 <?php echo csrf_field(); ?>
                 <button type="submit" class="btn-action-lg btn-checkin" <?php echo e(($attendance->exists && $attendance->check_in) ? 'disabled' : ''); ?>>
                     <i class="fa-solid fa-fingerprint"></i> Check-in
                 </button>
             </form>
 
-            <form action="<?php echo e(route('karyawan.absensi.checkout')); ?>" method="POST">
+            <form action="<?php echo e(route('karyawan.absensi.checkout')); ?>" method="POST" id="formCheckOut">
                 <?php echo csrf_field(); ?>
                 <button type="submit" class="btn-action-lg btn-checkout" <?php echo e((!$attendance->exists || !$attendance->check_in || $attendance->check_out) ? 'disabled' : ''); ?>>
                     <i class="fa-solid fa-person-walking-arrow-right"></i> Check-out
