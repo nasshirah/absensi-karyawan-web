@@ -44,12 +44,12 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-20">
                 <div class="flex items-center gap-3">
-                    <img src="{{ asset('images/retali-logo.png') }}" alt="Logo" class="h-10 w-auto">
+                    <img src="<?php echo e(asset('images/retali-logo.png')); ?>" alt="Logo" class="h-10 w-auto">
                     <span class="text-xl font-bold bg-gradient-to-r from-retali-primary to-retali-secondary bg-clip-text text-transparent">Absensi Digital</span>
                 </div>
                 <div class="hidden md:flex items-center space-x-8">
                     <a href="#fitur" class="text-slate-600 hover:text-retali-primary font-medium transition-colors">Fitur</a>
-                    <a href="{{ route('login') }}" class="bg-retali-primary hover:bg-retali-dark text-white px-6 py-2.5 rounded-xl font-semibold transition-all transform hover:scale-105 shadow-lg shadow-purple-200">
+                    <a href="<?php echo e(route('login')); ?>" class="bg-retali-primary hover:bg-retali-dark text-white px-6 py-2.5 rounded-xl font-semibold transition-all transform hover:scale-105 shadow-lg shadow-purple-200">
                         Masuk Sistem
                     </a>
                 </div>
@@ -69,7 +69,7 @@
                     Sistem manajemen kehadiran digital untuk memudahkan pelacakan waktu, pengajuan cuti, dan laporan performa karyawan dalam satu platform yang aman.
                 </p>
                 <div class="flex flex-col sm:flex-row justify-center gap-4">
-                    <a href="{{ route('login') }}" class="bg-retali-primary hover:bg-retali-dark text-white px-10 py-4 rounded-2xl font-bold text-lg transition-all shadow-xl shadow-purple-200">
+                    <a href="<?php echo e(route('login')); ?>" class="bg-retali-primary hover:bg-retali-dark text-white px-10 py-4 rounded-2xl font-bold text-lg transition-all shadow-xl shadow-purple-200">
                         Coba Sekarang
                     </a>
                     <a href="#fitur" class="bg-white hover:bg-slate-50 text-slate-700 px-10 py-4 rounded-2xl font-bold text-lg border border-slate-200 transition-all">
@@ -127,7 +127,7 @@
     <footer class="bg-retali-dark text-slate-300 py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <div class="flex flex-col items-center gap-4 mb-8">
-                <img src="{{ asset('images/retali-logo.png') }}" alt="Logo" class="h-10 w-auto">
+                <img src="<?php echo e(asset('images/retali-logo.png')); ?>" alt="Logo" class="h-10 w-auto">
                 <p class="max-w-md">Solusi manajemen sumber daya manusia yang modern untuk produktivitas tim Anda.</p>
             </div>
             <div class="border-t border-purple-800/50 pt-8">
@@ -138,3 +138,4 @@
 
 </body>
 </html>
+<?php /**PATH C:\laragon\www\Absensi_Karyawan\resources\views/welcome.blade.php ENDPATH**/ ?>

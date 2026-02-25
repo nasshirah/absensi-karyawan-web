@@ -24,7 +24,7 @@ class CutiController extends Controller
             ->paginate(20)
             ->withQueryString();
 
-        // 🔴 WAJIB: inject sisa cuti
+        
         $this->injectSisaCuti($items);
 
         return view('admin.cuti.index', compact('items','status'));
@@ -37,7 +37,7 @@ class CutiController extends Controller
             ->orderBy('start_date')
             ->paginate(20);
 
-        // 🔴 WAJIB: inject sisa cuti
+        
         $this->injectSisaCuti($items);
 
         return view('admin.cuti.pending', compact('items'));
@@ -98,8 +98,8 @@ class CutiController extends Controller
         return back()->with('success', 'Data cuti berhasil dihapus.');
     }
 
-    // ===============================
-    // HELPER: HITUNG CUTI TERPAKAI
+   
+   
     // ===============================
     private function usedLeaveDaysThisYear($userId)
     {
@@ -113,8 +113,8 @@ class CutiController extends Controller
             });
     }
 
-    // ===============================
-    // HELPER: INJECT SISA CUTI
+
+   
     // ===============================
     private function injectSisaCuti($items)
     {

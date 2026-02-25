@@ -81,10 +81,7 @@ class AbsensiController extends Controller
             $attendance->status = $attendance->status . ' + OVERTIME';
         } else {
             $attendance->overtime_minutes = 0;
-            // Status Pulang = NORMAL (No change to main string, or maybe append + NORMAL?)
-            // Requirement 10 example: "LATE" (alone) implies Late in, Normal out.
-            // Requirement 11: "LATE + OVERTIME".
-            // So we do not append anything if Normal.
+            
         }
         
         $attendance->save();

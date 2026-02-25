@@ -12,7 +12,7 @@ use App\Http\Controllers\Karyawan\CutiController as KaryawanCutiController;
 use App\Http\Controllers\Karyawan\ProfilController as KaryawanProfilController;
 
 Route::get('/', function () {
-    return redirect('/login');
+    return view('welcome');
 });
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
